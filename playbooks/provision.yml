@@ -1,0 +1,13 @@
+---
+- name: Smile deploy playbook
+  hosts: local
+  sudo: yes
+
+  vars_files:
+    - vars/local.yml
+
+  roles:
+    - common
+    - php
+    - composer
+    - nginx

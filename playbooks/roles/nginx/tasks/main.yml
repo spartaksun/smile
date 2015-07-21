@@ -1,0 +1,18 @@
+---
+- name: install nginx packages
+  apt: pkg={{ item }} state=latest
+  with_items:
+    - nginx
+
+- name: remove default nginx congig
+  shell:
+    rm -f /etc/nginx/sites-available/default
+
+- name: copy nginx site
+  template: src=smile.conf.j2 dest=/etc/nginx/sites-available/smile
+
+
+- name: make symbolic links
+  shell:
+     ln -s -f /etc/nginx/sites-available/smile /etc/nginx/sites-enabled/smile
+  notify: reload nginx
