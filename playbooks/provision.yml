@@ -11,3 +11,7 @@
     - php
     - composer
     - nginx
+    - java
+    - orientdb
+    - init
+

@@ -8,12 +8,16 @@
             "SymfonyStandard\\": "app/SymfonyStandard/"
         }
     },
+    "minimum-stability": "dev",
     "require": {
         "php": ">=5.3.9",
         "symfony/symfony": "2.7.*",
-        "doctrine/orm": "~2.2,>=2.2.3,<2.5",
+
+        "doctrine/orm": "2.3",
         "doctrine/dbal": "<2.5",
         "doctrine/doctrine-bundle": "~1.4",
+        "doctrine/orientdb-odm": "dev-master",
+
         "symfony/assetic-bundle": "~2.3",
         "symfony/swiftmailer-bundle": "~2.3",
         "symfony/monolog-bundle": "~2.4",

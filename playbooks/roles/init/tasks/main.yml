@@ -1,0 +1,3 @@
+---
+- name: restart orientdb
+  shell: sudo service orientdb start
