@@ -3,13 +3,12 @@
 namespace AppBundle\Command;
 
 
-use PhpOrient\PhpOrient;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use PhpOrient\Protocols\Binary\Operations;
 
-class PersonCommand extends ContainerAwareCommand
+class PersonCommand extends DbCommand
 {
 
     protected function configure()
@@ -32,28 +31,29 @@ class PersonCommand extends ContainerAwareCommand
             );
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return mixed
+     */
     public function execute(InputInterface $input, OutputInterface $output)
     {
+        mb_internal_encoding('utf-8');
 
         $offset = $input->getArgument('offset');
         if (!$offset) {
-            return;
+            return $output->writeln('Error: offset can not be empty');
         }
 
         $limit = $input->getArgument('limit');
-
         if (empty($limit)) {
-            $limit = 1000000;
+            $limit = 1000;
         }
-
-        mb_internal_encoding('utf-8');
-
-        $i = 0;
-        $values = [];
 
         $file = new \SplFileObject($input->getArgument('path'));
         $fileIterator = new \LimitIterator($file, $offset, $limit);
 
+        $i = 0;
         foreach ($fileIterator as $num => $line) {
             $i++;
             $row = str_getcsv($line, "|");
@@ -69,7 +69,6 @@ class PersonCommand extends ContainerAwareCommand
                 ) {
 
                     $lastNamePr = $this->prepareName($row[3]);
-
                     if (empty($lastNamePr[1]) || empty($lastNamePr[2])) {
                         continue;
                     }
@@ -96,17 +95,16 @@ class PersonCommand extends ContainerAwareCommand
                         }
                     }
 
-                    $dateCodeStart = " date(" . strtotime($row[13]) * 1000 . ")";
+                    $dateCodeStart = date("Y-m-d 00:00:00", strtotime($row[13]));
                     $dateCodeEnd = empty($row[14])
                         ? $dateCodeStart
-                        : " date(" . strtotime($row[14]) * 1000 . ")";
+                        : date("Y-m-d 00:00:00", strtotime($row[14]));
 
                     if (empty($row[6])) {
-                        $birthDate = "date(-30610234800000)";
+                        $birthDate = "1000-01-01 00:00:00";
                     } else {
-                        $birthDate = " date(" . strtotime($row[6]) * 1000 . ")";
+                        $birthDate = date("Y-m-d 00:00:00", strtotime($row[6]));
                     }
-
 
                     $birthLocality = '';
                     if (!empty($row[7])) {
@@ -122,73 +120,68 @@ class PersonCommand extends ContainerAwareCommand
                         $birthLocality .= $row[10] . " ";
                     }
 
-                    $values[] = "(
-                            {$row[0]},
-                            {$row[1]},
-                            {$dateCodeStart},
-                            {$dateCodeEnd},
-                            '{$firstNameRu}',
-                            '{$firstNameUkr}',
-                            '{$lastNameRu}',
-                            '{$lastNameUkr}',
-                            '{$patronymicRu}',
-                            '{$patronymicUkr}',
-                            {$birthDate},
-                            '{$birthLocality}'
-                            )";
+                    $values = [
+                        'id' => $row[1],
+                        'sys' => $row[0],
+                        'birth_date' => $birthDate,
+                        'start_date' => $dateCodeStart,
+                        'end_date' => $dateCodeEnd,
+                        'first_ru' => $firstNameRu,
+                        'last_ru' => $lastNameRu,
+                        'first_ukr' => $firstNameUkr,
+                        'last_ukr' => $lastNameUkr,
+                        'patronymic_ru' => $patronymicRu,
+                        'patronymic_ukr' => $patronymicUkr,
+                    ];
 
-                    if (count($values) >= 5000) {
-                        $output->writeln($i);
-                        $this->insert($values);
-                    }
-
+                    $this->insert($values);
                 } else {
-                    $output->writeln('Skip');
-                    var_export($row);
+                    $output->writeln('Skip: ' . var_export($row . true));
                 }
+
             } catch (\Exception $e) {
                 $output->writeln('Exception ' . $e->getMessage());
-                foreach($values as $value) {
-                    $value = [$value];
-                    try{
-                        $this->insert($value);
-                    } catch (\Exception $e) {
-                        continue;
-                    }
-                }
             }
         }
 
-        if (!empty($values)) {
-            $output->writeln("insert before exit " . count($values));
-            $this->insert($values);
-        }
+        return $output->writeln('Finish!');
+
     }
 
-    private function insert(& $values)
+    private function insert($values)
     {
-        $command = <<<SQL
-insert into Person ( sys_id,
-ident_code,
-ident_code_date_start,
-ident_code_date_end,
-first_name_ru,
-first_name_ukr,
-last_name_ru,
-last_name_ukr,
-patronymic_ru,
-patronymic_ukr,
-birth_date,
-birth_locality ) VALUES
-SQL
- . implode(",", $values);
-
-
-        $values = [];
-        $client = $this->getClient();
+        $client = $this->getContainer()->get('orient');
         $client->connect();
         $client->dbOpen('Smile', 'smile', 'smile');
+
+        $exists = $client->command('SELECT FROM Person WHERE id = ' . $values['id'] . '');
+
+
+        $set = <<<HERE
+            [{ "@type":"d",
+            "@class":"Name",
+            "start_date": "$values[start_date]",
+            "end_date": "$values[end_date]",
+            "first_ru": "$values[first_ru]",
+            "last_ru": "$values[last_ru]",
+            "first_ukr": "$values[first_ukr]",
+            "last_ukr": "$values[last_ukr]",
+            "patronymic_ru": "$values[patronymic_ru]",
+            "patronymic_ukr": "$values[patronymic_ukr]" }]
+HERE;
+        if(!$exists) {
+            $command = "insert into Person SET
+id={$values['id']} ,
+sys={$values['sys']},
+birth_date='{$values['birth_date']}',
+\"name\" = {$set}
+";
+        } else {
+            $command = "UPDATE Person ADD name = {$set} WHERE id={$values['id']}";
+        }
+
         $client->command($command);
+
     }
 
     private function prepareName($name)
@@ -212,15 +205,4 @@ SQL
         return $row;
     }
 
-    protected function getClient()
-    {
-        $client = new PhpOrient();
-        $client->hostname = '127.0.0.1';
-        $client->port = 2424;
-        $client->username = 'root';
-        $client->password = 'hello';
-
-
-        return $client;
-    }
 }
