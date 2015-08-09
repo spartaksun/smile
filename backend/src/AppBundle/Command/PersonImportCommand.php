@@ -221,7 +221,7 @@ HERE;
             $this->bindLocation($person->getRid()->__toString(), $values['born_at']);
 
         } else {
-            $command = "UPDATE Person ADD name = {$set} WHERE id={$values['id']}";
+            $command = "UPDATE Person ADD \"name\" = {$set} WHERE id={$values['id']}";
             $client->command($command);
         }
     }
