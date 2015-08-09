@@ -3,16 +3,27 @@
 namespace AppBundle\Command;
 
 
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class InitDBCommand extends DbCommand
+/**
+ * Creates vertex and edge classes
+ * @package AppBundle\Command
+ */
+class GraphInitCommand extends ContainerAwareCommand
 {
+    /**
+     * @inheritdoc
+     */
     protected function configure()
     {
-        $this->setName('db:init');
+        $this->setName('graph:init');
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $client = $this->getContainer()->get('orient');
@@ -72,6 +83,8 @@ class InitDBCommand extends DbCommand
             'CREATE PROPERTY Building.point STRING',
             'CREATE INDEX number_point_street ON Building (number, point, street) UNIQUE',
 
+            'CREATE CLASS BornAt EXTENDS E'
+
         ];
 
         foreach($commands as $command) {
@@ -79,13 +92,4 @@ class InitDBCommand extends DbCommand
         }
     }
 
-    private function truncateCommands()
-    {
-        return [
-            'TRUNCATE class Person',
-            'TRUNCATE class Name',
-            'DROP class Person',
-            'DROP class Name',
-        ];
-    }
 }
