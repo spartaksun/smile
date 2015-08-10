@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Command;
+namespace PersonBundle\Command;
 
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;

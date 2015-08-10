@@ -4,3 +4,4 @@ nginx_document_root: /var/www/smile/backend/web
 nginx_server_name: smile.localhost
 nginx_index_file: app.php
 install_jdk: true
+orientdb_version: 2.1.0

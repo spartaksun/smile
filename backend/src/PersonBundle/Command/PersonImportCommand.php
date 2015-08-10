@@ -1,6 +1,6 @@
 <?php
 
-namespace AppBundle\Command;
+namespace PersonBundle\Command;
 
 
 use PhpOrient\PhpOrient;
@@ -143,7 +143,7 @@ class PersonImportCommand extends ContainerAwareCommand
                 }
 
             } catch (\Exception $e) {
-                $output->writeln('Exception ' . $e->getMessage());
+                $output->writeln('Exception: ' . $e->getMessage() . $e->getTraceAsString());
             }
         }
 
@@ -216,12 +216,13 @@ HERE;
                 id={$values['id']} ,
                 sys={$values['sys']},
                 birth_date='{$values['birth_date']}',
-                \"name\" = {$set}";
+                name = {$set}";
+
             $person = $client->command($command);
             $this->bindLocation($person->getRid()->__toString(), $values['born_at']);
 
         } else {
-            $command = "UPDATE Person ADD \"name\" = {$set} WHERE id={$values['id']}";
+            $command = "UPDATE Person ADD name = {$set} WHERE id={$values['id']}";
             $client->command($command);
         }
     }
@@ -279,7 +280,7 @@ HERE;
      */
     private function prepareClient()
     {
-        $client = $this->getContainer()->get('orient');
+        $client = $this->getContainer()->get('orient');/* @var $client PhpOrient */
         $client->connect();
         $client->dbOpen('Smile', 'smile', 'smile');
 

@@ -1,9 +1,10 @@
 <?php
 
-namespace AppBundle\Command;
+namespace PersonBundle\Command;
 
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -18,7 +19,9 @@ class GraphDropCommand extends ContainerAwareCommand
      */
     protected function configure()
     {
-        $this->setName('graph:drop');
+        $this->setName('graph:drop')
+            ->addArgument('force', InputArgument::REQUIRED, 'Unsafe clean of database')
+        ;
     }
 
     /**
@@ -31,8 +34,8 @@ class GraphDropCommand extends ContainerAwareCommand
         $client->dbOpen('Smile', 'smile', 'smile');
 
         foreach($this->classNames() as $class) {
-            $client->command("TRUNCATE CLASS {$class}");
-            $client->command("Drop CLASS {$class}");
+            $client->command("TRUNCATE CLASS {$class} UNSAFE");
+            $client->command("DROP CLASS {$class}");
         }
     }
 

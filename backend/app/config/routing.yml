@@ -1,6 +1,4 @@
-root:
-    path: /
-    defaults:
-        _controller: AppBundle:Default:index
-        path: /
-        permanent: true
+person:
+    resource: "@PersonBundle/Resources/config/routing.yml"
+    prefix:   /
+
