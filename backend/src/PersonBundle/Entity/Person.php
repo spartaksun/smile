@@ -2,45 +2,22 @@
 
 namespace PersonBundle\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ODM\OrientDB\Mapper\Annotations as ODM;
+use Doctrine\Common\Annotations\Annotation as ORM;
 
 /**
- * @ODM\Document(class="Person")
+ * Category
+ *
+ * @ORM\Table()
+ * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks()
  */
 class Person
 {
     /**
-     * @ODM\Property(name="@rid", type="string")
+     * @ORM\Attribute(name="@rid",required="true")
      */
     protected $rid;
 
 
-    /**
-     * @ODM\Property(type="integer")
-     */
-    protected $id;
-
-    /**
-     * @var ArrayCollection
-     * @ODM\OneToMany(targetEntity="PersonBundle\Entity\Name", mappedBy="parent")
-     */
-    public $name;
-
-
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
-
-    public function getName()
-    {
-        return $this->name;
-    }
 
 }

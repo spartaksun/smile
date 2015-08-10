@@ -1,3 +1,3 @@
-person_homepage:
-    path:     /
-    defaults: { _controller: PersonBundle:Default:index }
+#person_homepage:
+#    path:     /
+#    defaults: { _controller: PersonBundle:Default:index }
