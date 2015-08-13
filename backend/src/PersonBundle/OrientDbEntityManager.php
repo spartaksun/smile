@@ -18,7 +18,10 @@ class OrientDbEntityManager
      */
     protected $dbName;
 
-    protected $classMap = [];
+    /**
+     * @var array class mapping
+     */
+    public $classMap = [];
 
     /**
      * @param PhpOrient $client
@@ -29,23 +32,14 @@ class OrientDbEntityManager
         $this->dbName = $dbName;
     }
 
-    public function classMap()
-    {
-        return $this->classMap;
-    }
-
     /**
      * @param string $orientClassName
      * @return OrientDbRepository
      */
     public function getRepository($orientClassName)
     {
-        $shortClassName = $this->shortClassName($orientClassName);
-        $this->classMap[$shortClassName] = $orientClassName;
-
-        return new OrientDbRepository($shortClassName, $this);
+        return new OrientDbRepository($this->classMap[$orientClassName], $this);
     }
-
 
     public function shortClassName($className)
     {

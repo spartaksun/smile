@@ -20,6 +20,9 @@ class OrientDbRepository
         $this->dbClass = $dbClass;
     }
 
+    /**
+     * @return null
+     */
     public function findAll()
     {
         $client = $this->em->getClient();
@@ -32,22 +35,28 @@ class OrientDbRepository
         return $this->populate($data);
     }
 
+    /**
+     * @param $data
+     * @return null
+     */
     protected function populate($data)
     {
-        $classMap = $this->em->classMap();
-        $object = new $classMap[$this->dbClass]; // TODO костыль - могут вернуться объекты разных типов
+        $object = null;
+        $classMap = array_flip($this->em->classMap);
 
         if ($data instanceof Record) {
-            $oData = $data->getOData();
-            if (!empty($oData) && is_array($oData)) {
-                foreach ($oData as $key => $value) {
-                    $object->{$key} = $value;
+            $key = $data->getOClass();
+            if (array_key_exists($key, $classMap)) {
+                $object = new $classMap[$key];
+                $oData = $data->getOData();
+                if (!empty($oData) && is_array($oData)) {
+                    foreach ($oData as $key => $value) {
+                        $object->{$key} = $value;
+                    }
                 }
             }
         }
 
         return $object;
     }
-
-
 }
