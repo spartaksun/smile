@@ -2,14 +2,11 @@
 
 namespace PersonBundle;
 
-
-class Country extends Entity
+/**
+ * Class Country
+ * @package PersonBundle
+ */
+class Country
 {
-    /**
-     * @return string
-     */
-    function getOrientClass()
-    {
-        return 'Country';
-    }
+    public $name;
 }
