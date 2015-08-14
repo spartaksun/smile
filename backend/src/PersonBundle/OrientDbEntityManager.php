@@ -41,12 +41,6 @@ class OrientDbEntityManager
         return new OrientDbRepository($this->classMap[$orientClassName], $this);
     }
 
-    public function shortClassName($className)
-    {
-        $exploded = explode("\\", $className);
-        return end($exploded);
-    }
-
     /**
      * @return PhpOrient
      */

@@ -3,6 +3,7 @@
 namespace PersonBundle;
 
 
+use Doctrine\OrientDB\Query\Command\Select;
 use PhpOrient\Protocols\Binary\Data\Record;
 
 class OrientDbRepository
@@ -21,42 +22,58 @@ class OrientDbRepository
     }
 
     /**
+     * @param int $limit
      * @return null
      */
-    public function findAll()
+    public function findAll($limit = 20)
     {
-        $client = $this->em->getClient();
-        $client->connect();
-        $client->dbOpen($this->em->getDbName());
+        $sql = (new Select())->from([$this->dbClass])
+            ->limit($limit)
+            ->getRaw();
 
-        $className = $this->dbClass;
-        $data = $client->command("SELECT * FROM {$className}");
+        $data = $this->prepareClient()
+            ->query($sql);
 
         return $this->populate($data);
     }
 
     /**
-     * @param $data
+     * @return \PhpOrient\PhpOrient
+     */
+    protected function prepareClient()
+    {
+        $client = $this->em->getClient();
+        $client->connect();
+        $client->dbOpen($this->em->getDbName());
+
+        return $client;
+    }
+
+    /**
+     * @param $objects
      * @return null
      */
-    protected function populate($data)
+    protected function populate(array $objects)
     {
-        $object = null;
+        $entities = [];
         $classMap = array_flip($this->em->classMap);
 
-        if ($data instanceof Record) {
-            $key = $data->getOClass();
-            if (array_key_exists($key, $classMap)) {
-                $object = new $classMap[$key];
-                $oData = $data->getOData();
-                if (!empty($oData) && is_array($oData)) {
-                    foreach ($oData as $key => $value) {
-                        $object->{$key} = $value;
+        foreach ($objects as $object) {
+            if ($object instanceof Record) {
+                $key = $object->getOClass();
+                if (array_key_exists($key, $classMap)) {
+                    $entity = new $classMap[$key];
+                    $oData = $object->getOData();
+                    if (!empty($oData) && is_array($oData)) {
+                        foreach ($oData as $key => $value) {
+                            $entity->{$key} = $value;
+                        }
                     }
+                    $entities[] = $entity;
                 }
             }
         }
 
-        return $object;
+        return $entities;
     }
 }
