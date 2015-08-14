@@ -56,7 +56,7 @@ class OrientDbRepository
     protected function populate(array $objects)
     {
         $entities = [];
-        $classMap = array_flip($this->em->classMap);
+        $classMap = $this->em->classMap;
 
         foreach ($objects as $object) {
             if ($object instanceof Record) {

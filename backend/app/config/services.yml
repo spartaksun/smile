@@ -20,4 +20,4 @@ services:
         arguments: [@orient, "Smile"]
         properties:
             classMap:
-                "PersonBundle\Country": Country
+                "Country": PersonBundle\Country

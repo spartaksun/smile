@@ -38,7 +38,9 @@ class OrientDbEntityManager
      */
     public function getRepository($orientClassName)
     {
-        return new OrientDbRepository($this->classMap[$orientClassName], $this);
+        $classMap = array_flip($this->classMap);
+
+        return new OrientDbRepository($classMap[$orientClassName], $this);
     }
 
     /**
