@@ -4,6 +4,7 @@ namespace LocationBundle\Model;
 
 
 use LocationBundle\Entity\Country;
+use LocationBundle\Entity\Region;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -18,13 +19,15 @@ class LocationSetter implements ContainerAwareInterface
      */
     protected $container;
 
+
     /**
      * @param array $locationParams
      */
     public function setByNames(array $locationParams)
     {
         $this->checkParams($locationParams);
-        $country = $this->setCountryByName($locationParams['country']);
+        return $this->upsertCountry($locationParams['country']);
+
 
     }
 
@@ -36,11 +39,14 @@ class LocationSetter implements ContainerAwareInterface
     private function checkParams($params)
     {
         $expectedParams = [
-            'country', 'district', 'region', 'city'
+            'country',
+//            'district',
+//            'region',
+//            'city'
         ];
 
-        foreach($expectedParams as $key => $value) {
-            if(!isset($params[$key])) {
+        foreach ($expectedParams as $key) {
+            if (!isset($params[$key])) {
                 throw new \ErrorException("Key {$key} not found.");
             }
         }
@@ -48,24 +54,46 @@ class LocationSetter implements ContainerAwareInterface
 
     /**
      * Insert country if not exists
-     * @param $name
+     * @param $countryName
      * @return Country
      */
-    private function setCountryByName($name)
+    private function upsertCountry($countryName)
     {
         $countryRepo = $this->container
             ->get('orient.em')
             ->getRepository(Country::class);
 
-        $country = $countryRepo->find('name=?', $name);
+        $country = $countryRepo->find('name=?', $countryName);
         if (empty($country)) {
             $country = new Country();
-            $country->name = $name;
+            $country->name = $countryName;
 
             $countryRepo->persist($country);
         }
 
         return $country;
+    }
+
+    /**
+     * @param $regionName
+     * @param Country $country
+     * @return Region
+     */
+    private function upsertRegion($regionName, Country $country)
+    {
+        $regionRepo = $this->container
+            ->get('orient.em')
+            ->getRepository(Region::class);
+
+        $region = $regionRepo->find('name=? AND country=?', [$regionName, $country->getRid()]);
+        if(empty($region)) {
+            $region = new Region();
+            $region->name = $regionName;
+
+            $regionRepo->persist($region);
+        }
+
+        return $region;
     }
 
     /**

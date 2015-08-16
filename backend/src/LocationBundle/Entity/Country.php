@@ -9,12 +9,30 @@ namespace LocationBundle\Entity;
 
 
 use OrientDbBundle\OrientDbEntity;
+use OrientDbBundle\Validators\StringValidator;
 
 /**
  * Country entity
  * @package LocationBundle\Entity
+ *
+ * @property $name
  */
 class Country extends OrientDbEntity
 {
-    public $name;
+    /**
+     * {@inheritdoc}
+     */
+    public function validators()
+    {
+        return [
+            'name' => [
+                [
+                    StringValidator::class,
+                    [
+                        'max' => 10,
+                    ],
+                ],
+            ],
+        ];
+    }
 }

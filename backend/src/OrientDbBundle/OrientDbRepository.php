@@ -9,7 +9,7 @@ namespace OrientDbBundle;
 
 
 use Doctrine\OrientDB\Query\Query;
-use PhpOrient\Protocols\Binary\Data\ID;
+use OrientDbBundle\Validators\Validator;
 use PhpOrient\Protocols\Binary\Data\Record;
 
 /**
@@ -55,22 +55,6 @@ class OrientDbRepository
     }
 
     /**
-     * @param string|ID $rid
-     * @return OrientDbEntityInterface|null
-     */
-    public function findByRid($rid)
-    {
-        $sql = (new Query())->from([$this->dbClass])
-            ->where('@rid=?', $rid)
-            ->getRaw();
-
-        $data = $this->prepareClient()
-            ->query($sql);
-
-        return $this->populate($data);
-    }
-
-    /**
      * @param $condition
      * @param $params
      * @return OrientDbEntityInterface
@@ -94,20 +78,56 @@ class OrientDbRepository
      */
     public function persist(OrientDbEntityInterface $object)
     {
-        $reflectionClass = new \ReflectionClass($object);
+        $this->validate($object);
 
-        $params = [];
-        foreach($reflectionClass->getProperties() as $property) {
-            /* @var $property \ReflectionProperty */
-            if($property->isPublic()) {
-                $params[$property->name] = $object->{$property->name};
-            }
+        if (!empty($object->getErrors())) {
+            return false;
         }
 
-        if(empty($object->getRid())) {
+        if (empty($object->getRid())) {
             $object->setRid(
-                $this->insert($params)
+                $this->insert($object->getAttributes())
             );
+        } else {
+            //TODO Update entity
+        }
+
+        return true;
+    }
+
+    /**
+     * Runs all object validators
+     * @param OrientDbEntityInterface $object
+     * @throws \ErrorException
+     */
+    protected function validate(OrientDbEntityInterface $object)
+    {
+        $validators = $object->validators();
+        foreach ($validators as $attribute => $attributeValidators) {
+            foreach($attributeValidators as $validatorParams) {
+                $validator = $this->buildValidators($validatorParams);
+                $validator->validateAttribute($object, $attribute);
+            }
+        }
+    }
+
+    /**
+     * Compose validator from parameters
+     * @param array $validatorParams
+     * @return Validator
+     * @throws \ErrorException
+     */
+    protected function buildValidators(array $validatorParams)
+    {
+        $params = [];
+        if (isset($validatorParams[0]) && class_exists($validatorParams[0])) {
+            if (!empty($validatorParams[1]) && is_array($validatorParams[1])) {
+                $params = $validatorParams[1];
+            }
+
+            return new $validatorParams[0]($params);
+        } else {
+            throw new OrientDbException('Incorrect validator class');
         }
     }
 
@@ -124,7 +144,8 @@ class OrientDbRepository
             ->values(array_values($params))
             ->getRaw();
 
-        $record = $this->prepareClient()->command($sql);/* @var $record Record */
+        $record = $this->prepareClient()->command($sql);
+        /* @var $record Record */
 
         return $record->getRid();
     }
@@ -166,7 +187,8 @@ class OrientDbRepository
         $key = $record->getOClass();
         if (array_key_exists($key, $classMap)) {
 
-            $entity = new $classMap[$key]; /* @var OrientDbEntityInterface $entity */
+            $entity = new $classMap[$key];
+            /* @var OrientDbEntityInterface $entity */
             $entity->setRid($record->getRid());
 
             $oData = $record->getOData();

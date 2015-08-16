@@ -10,16 +10,66 @@ namespace OrientDbBundle;
 
 use PhpOrient\Protocols\Binary\Data\ID;
 
+/**
+ * OrientDbEntity
+ * @package OrientDbBundle
+ */
 class OrientDbEntity implements OrientDbEntityInterface
 {
-
     /**
      * @var ID
      */
     private $_rid;
 
     /**
-     * @return ID
+     * @var array
+     */
+    private $_attributes = [];
+
+    /**
+     * @var array
+     */
+    private $_errors = [];
+
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAttribute($attributeName)
+    {
+        if(array_key_exists($attributeName, $this->_attributes)) {
+            return $this->_attributes[$attributeName];
+        }
+
+        return null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAttributes()
+    {
+        return $this->_attributes;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __get($attributeName)
+    {
+        return $this->getAttribute($attributeName);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __set($name, $value)
+    {
+        $this->setAttribute($name, $value);
+    }
+
+    /**
+     * {@inheritdoc}
      */
     final public function getRid()
     {
@@ -27,7 +77,7 @@ class OrientDbEntity implements OrientDbEntityInterface
     }
 
     /**
-     * @param ID|string $rid
+     * {@inheritdoc}
      */
     final public function setRid($rid)
     {
@@ -45,4 +95,47 @@ class OrientDbEntity implements OrientDbEntityInterface
             $this->_rid = $id;
         }
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setAttributes(array $attributes)
+    {
+        foreach($attributes as $name => $value) {
+            $this->setAttribute($name, $value);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setAttribute($name, $value)
+    {
+        $this->_attributes[$name] = $value;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function validators()
+    {
+        return [];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getErrors()
+    {
+        return $this->_errors;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addError($attribute, $error)
+    {
+       $this->_errors[$attribute][] = $error;
+    }
+
 }
