@@ -1,0 +1,11 @@
+services:
+    orient:
+        class: PhpOrient\PhpOrient
+        public: false
+        properties:
+            hostname: 'smile.localhost'
+            port: 2424
+            username: 'root'
+            password: 'root'
+
+
