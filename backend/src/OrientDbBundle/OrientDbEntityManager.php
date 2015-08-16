@@ -1,10 +1,19 @@
 <?php
+/**
+ * Created by A.Belyakovskiy.
+ * Date: 8/16/15
+ * Time: 2:21 PM
+ */
 
-namespace PersonBundle;
+namespace OrientDbBundle;
 
 
 use PhpOrient\PhpOrient;
 
+/**
+ * Class OrientDbEntityManager
+ * @package OrientDbBundle
+ */
 class OrientDbEntityManager
 {
 
@@ -22,6 +31,7 @@ class OrientDbEntityManager
      * @var array class mapping
      */
     public $classMap = [];
+
 
     /**
      * @param PhpOrient $client

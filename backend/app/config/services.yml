@@ -5,19 +5,9 @@ parameters:
 
 services:
 
-    orient:
-        class: PhpOrient\PhpOrient
-        public: false
-        properties:
-            hostname: 'smile.localhost'
-            port: 2424
-            username: 'root'
-            password: 'root'
-
-
     orient.em:
-        class: PersonBundle\OrientDbEntityManager
+        class: OrientDbBundle\OrientDbEntityManager
         arguments: [@orient, "Smile"]
         properties:
             classMap:
-                "Country": PersonBundle\Country
+                "Country": LocationBundle\Entity\Country
