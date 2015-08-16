@@ -1,5 +1,1 @@
 services:
-    person.location:
-        class: PersonBundle\Location
-        calls:
-            - [ setContainer, [ @service_container ] ]
