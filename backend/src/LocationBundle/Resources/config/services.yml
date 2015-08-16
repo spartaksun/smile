@@ -1,5 +1,5 @@
 services:
-    person.location:
-        class: LocationBundle\LocationSetter
+    location.setter:
+        class: LocationBundle\Model\LocationSetter
         calls:
             - [ setContainer, [ @service_container ] ]

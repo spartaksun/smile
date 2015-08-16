@@ -1,8 +1,9 @@
 <?php
 
-namespace LocationBundle;
+namespace LocationBundle\Model;
 
 
+use LocationBundle\Entity\Country;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -17,6 +18,28 @@ class LocationSetter implements ContainerAwareInterface
      */
     protected $container;
 
+
+    /**
+     * Insert country if not exists
+     * @param $name
+     * @return Country
+     */
+    public function setCountryByName($name)
+    {
+        $countryRepo = $this->container
+            ->get('orient.em')
+            ->getRepository(Country::class);
+
+        $country = $countryRepo->find('name=?', $name);
+        if (empty($country)) {
+            $country = new Country();
+            $country->name = $name;
+
+            $countryRepo->persist($country);
+        }
+
+        return $country;
+    }
 
     /**
      * {@inheritdoc}

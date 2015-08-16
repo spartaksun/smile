@@ -73,7 +73,7 @@ class OrientDbRepository
     /**
      * @param $condition
      * @param $params
-     * @return OrientDbEntityInterface[]
+     * @return OrientDbEntityInterface
      */
     public function find($condition, $params)
     {
@@ -104,13 +104,11 @@ class OrientDbRepository
             }
         }
 
-        $rid = $object->getRid();
-
-        if(empty($rid)) {
-            return $this->insert($params);
+        if(empty($object->getRid())) {
+            $object->setRid(
+                $this->insert($params)
+            );
         }
-
-        return false;
     }
 
     /**
@@ -126,9 +124,9 @@ class OrientDbRepository
             ->values(array_values($params))
             ->getRaw();
 
-        $data = $this->prepareClient()->command($sql);
+        $record = $this->prepareClient()->command($sql);/* @var $record Record */
 
-        return $this->populateRecord($data);
+        return $record->getRid();
     }
 
     /**
