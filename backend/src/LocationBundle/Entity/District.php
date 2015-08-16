@@ -8,14 +8,14 @@
 namespace LocationBundle\Entity;
 
 
-use OrientDbBundle\OrientDbEntity;
+use spartaksun\OrientDb\Entity;
 
 /**
  * District entity
  * @package LocationBundle\Entity
  * @property string $name
  */
-class District extends OrientDbEntity
+class District extends Entity
 {
 
 }

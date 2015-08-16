@@ -8,8 +8,8 @@
 namespace LocationBundle\Entity;
 
 
-use OrientDbBundle\OrientDbEntity;
-use OrientDbBundle\Validators\StringValidator;
+use spartaksun\OrientDb\Entity;
+use spartaksun\OrientDb\Validators\StringValidator;
 
 /**
  * Country entity
@@ -17,7 +17,7 @@ use OrientDbBundle\Validators\StringValidator;
  *
  * @property $name
  */
-class Country extends OrientDbEntity
+class Country extends Entity
 {
     /**
      * {@inheritdoc}

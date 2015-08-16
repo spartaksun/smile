@@ -40,9 +40,9 @@ class LocationSetter implements ContainerAwareInterface
     {
         $expectedParams = [
             'country',
-//            'district',
-//            'region',
-//            'city'
+            'district',
+            'region',
+            'city'
         ];
 
         foreach ($expectedParams as $key) {

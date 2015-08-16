@@ -8,13 +8,13 @@
 namespace LocationBundle\Entity;
 
 
-use OrientDbBundle\OrientDbEntity;
+use spartaksun\OrientDb\Entity;
 
 /**
  * Class City
  * @package LocationBundle\Entity
  */
-class City extends OrientDbEntity
+class City extends Entity
 {
 
 }

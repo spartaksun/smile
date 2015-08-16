@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "015549185a3488ac47cb8ba8d4b07c4e",
+    "hash": "f72b6d61c2123ce9f7014f4526095276",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -886,12 +886,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "5779c3740ec7902c898dc7353b28d70ab0e690e5"
+                "reference": "72cb14c7049f4471b79a300e11572dcd9113d38a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/5779c3740ec7902c898dc7353b28d70ab0e690e5",
-                "reference": "5779c3740ec7902c898dc7353b28d70ab0e690e5",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/72cb14c7049f4471b79a300e11572dcd9113d38a",
+                "reference": "72cb14c7049f4471b79a300e11572dcd9113d38a",
                 "shasum": ""
             },
             "require": {
@@ -954,7 +954,7 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2015-08-11 10:25:54"
+            "time": "2015-08-15 17:42:55"
         },
         {
             "name": "ostico/phporient",
@@ -1213,6 +1213,37 @@
             ],
             "description": "A security checker for your composer.lock",
             "time": "2015-08-11 12:11:25"
+        },
+        {
+            "name": "spartaksun/orientdb-entity",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spartaksun/orientdb-entity.git",
+                "reference": "169af97e94db2eaca0b9ebabcb7e936b151989c9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spartaksun/orientdb-entity/zipball/169af97e94db2eaca0b9ebabcb7e936b151989c9",
+                "reference": "169af97e94db2eaca0b9ebabcb7e936b151989c9",
+                "shasum": ""
+            },
+            "require": {
+                "ostico/phporient": "dev-master",
+                "php": ">=5.5.0",
+                "spartaksun/orientdb-query": "dev-master"
+            },
+            "type": "package",
+            "autoload": {
+                "psr-4": {
+                    "spartaksun\\OrientDb\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "time": "2015-08-16 21:47:08"
         },
         {
             "name": "spartaksun/orientdb-query",
@@ -1609,12 +1640,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "af129b2f75fbb7b9c23f4dcb6f6c77a90769bd47"
+                "reference": "c27b04c9d60b55a4f2906ec7e6753c3c74ab5e38"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/af129b2f75fbb7b9c23f4dcb6f6c77a90769bd47",
-                "reference": "af129b2f75fbb7b9c23f4dcb6f6c77a90769bd47",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/c27b04c9d60b55a4f2906ec7e6753c3c74ab5e38",
+                "reference": "c27b04c9d60b55a4f2906ec7e6753c3c74ab5e38",
                 "shasum": ""
             },
             "require": {
@@ -1658,7 +1689,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2015-08-13 12:50:40"
+            "time": "2015-08-15 21:53:21"
         }
     ],
     "packages-dev": [
@@ -1714,8 +1745,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "ostico/phporient": 20,
-        "spartaksun/orientdb-query": 20
+        "spartaksun/orientdb-entity": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

@@ -8,7 +8,7 @@
 namespace LocationBundle\Entity;
 
 
-use OrientDbBundle\OrientDbEntity;
+use spartaksun\OrientDb\Entity;
 
 /**
  * Region entity
@@ -17,7 +17,7 @@ use OrientDbBundle\OrientDbEntity;
  * @property string $name
  * @property Country $country
  */
-class Region extends OrientDbEntity
+class Region extends Entity
 {
 
 }
